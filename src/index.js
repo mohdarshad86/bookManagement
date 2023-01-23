@@ -8,7 +8,10 @@ const app = express();
 app.use(express.json());
 
 mongoose
-  .connect("cluster-String", { useNewUrlParser: true })
+  .connect(
+    "mongodb+srv://Chetan_ProjectClustor:PNr1Fn8OcRu2cGmk@project1.h4p8xqh.mongodb.net/group13Database",
+    { useNewUrlParser: true }
+  )
   .then(() => {
     console.log("BatsyDB is connected");
   })
