@@ -12,11 +12,6 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phone: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     userId: {
       type: ObjectId,
       ref: "user",
@@ -35,10 +30,12 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    reviews: {
-      type: Number,
-      default: 0,
-    },
+    reviews: [
+      {
+        type: Number,
+        default: 0,
+      },
+    ],
     //comment: Holds number of reviews of this book
     deletedAt: new Date(),
     isDeleted: {
