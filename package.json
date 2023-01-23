@@ -4,7 +4,7 @@
   "description": "\"Book Publisher and User Management\"",
   "main": "index.js",
   "scripts": {
-    "test": "npx nodemon src/index.js"
+    "start": "npx nodemon src/index.js"
   },
   "author": "\"Batsy\"",
   "license": "ISC",

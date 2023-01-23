@@ -13,7 +13,7 @@ mongoose
     { useNewUrlParser: true }
   )
   .then(() => {
-    console.log("BatsyDB is connected");
+    console.log("mongoDB is connected");
   })
   .catch((err) => {
     console.log(err.message);
