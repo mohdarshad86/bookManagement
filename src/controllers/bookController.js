@@ -1,7 +1,6 @@
-
 const bookModel=require("../models/bookModel")
 const userModel=require("../models/userModel")
- const validation=require("../validations/validation")
+const validation=require("../validations/validation")
 
 
 const createBooks= async (req,res)=>{
@@ -16,7 +15,7 @@ const createBooks= async (req,res)=>{
     if(!validation.validate(excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
 
     if(!userId) return res.status(400).send({status:false, message:"user Id is mandatory"})
-    if(!validation.validateObjectId.test(userId)) return res.status(400).send({status:false, message:"Please enter valid userId"})
+    if(!validation.validateObjectId(userId)) return res.status(400).send({status:false, message:"Please enter valid userId"})
 
 
     if(!ISBN) return res.status(400).send({status:false, message:"ISBN is mandatory"})
@@ -36,17 +35,16 @@ const createBooks= async (req,res)=>{
 
     const checkUniqueness= await bookModel.findOne({$or:[{title:title},{ISBN:ISBN}]})
 
+    if (checkUniqueness) {
     if(checkUniqueness.title==title) return res.status(400).send({status:false, message:"title already exist"})
-
     if(checkUniqueness.ISBN==ISBN) return res.status(400).send({status:false,message:"ISBN already exist"})
+    }
 
     let createBook= await bookModel.create(data)
-    res.status(201).send({status:true, message:"Success", data:createBook})
-    
+    res.status(201).send({status:true, message:"Success", data:createBook})    
     } catch(err){
         res.status(500).send({status:false,message:err.message})
     }
-
 }
 
 module.exports={createBooks}
