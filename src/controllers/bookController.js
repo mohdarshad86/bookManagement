@@ -47,4 +47,24 @@ const createBooks= async (req,res)=>{
     }
 }
 
-module.exports={createBooks}
+const getBooks=async(req, res)=>{
+
+    let { userId, category, subcategory } = req.query
+
+    let filter = {isDeleted:false}
+
+    if (userId) filter.userId = userId
+    
+    if(category) filter.category = category
+
+    if(subcategory) filter.subcategory = subcategory
+
+    let allBooks = await bookModel.find(filter).select({ISBN:0, subcategory:0, __V:0, createdAt:0, updatedAt:0})
+    if (allBooks.length == 0) {
+        return res.status(404).send({status:false, message:"No book exist in the collection"})
+    }
+
+    return res.status(200).send({status:true, data:allBooks})
+}
+
+module.exports={createBooks, getBooks}

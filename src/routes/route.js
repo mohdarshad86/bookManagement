@@ -3,11 +3,16 @@ const router = express.Router();
 const bookController=require("../controllers/bookController")
 const userController=require("../controllers/userController")
 
-// router.post("/createUser", userController.createUser);
 
+router.post("/register", userController.createUser)
 
 router.post("/books", bookController.createBooks)
-router.post("/register", userController.createUser)
+
+router.get("/books", bookController.getBooks)
+
+
+
+
 
 
 module.exports = router;

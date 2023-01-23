@@ -10,20 +10,20 @@ if(typeof(userData.title) !== 'string') return res.status(400).send({status:fals
 if(!(["Mr", "Mrs", "Miss"].includes(userData.title))) return res.status(400).send({status:false, message:"title can only contain Mr,Mrs, Miss"})
 
 if(!userData.name) return res.status(400).send({status:false,message:"name is mandetory"})
-//if(typeof(userData.name!=="string")) return res.status(400).send({status:false,message:"wrong format of name"})
-if(!validation.validate(userData.name)) return res.status(400).send({status:false,message:"wrong format of name"})
+if(typeof(userData.name) != 'string') return res.status(400).send({status:false,message:"wrong format of name"})
+if(!validation.validate(userData.name)) return res.status(400).send({status:false,message:"invalid name"})
 
 if(!userData.phone) return res.status(400).send({status:false,message:"phone is mandetory"})
-// if(typeof(userData.phone)!=="string") return res.status(400).send({status:false,message:"wrong format of phone"})
-if(!(userData.phone).match(/^[6-9][0-9]{9}$/)) return res.status(400).send({status:false,message:"invalid phone number"})
+if(typeof(userData.phone)!=="string") return res.status(400).send({status:false,message:"wrong format of phone"})
+if(!validation.validatePhone(userData.phone)) return res.status(400).send({status:false,message:"invalid phone number"})
 
 if(!userData.email) return res.status(400).send({status:false,message:"email is mandetory"})
-// if(typeof(userData.email!=="string")) return res.status(400).send({status:false,message:"wrong format of email"})
-if(!((userData.email).match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/))) return res.status(400).send({status:false,message:"invalid email address"})
+if(typeof(userData.email)!=="string") return res.status(400).send({status:false,message:"wrong format of email"})
+if(!validation.validateEmail(userData.email)) return res.status(400).send({status:false,message:"invalid email address"})
 
 if(!userData.password) return res.status(400).send({status:false,message:"password is mandetory"})
-// if(typeof(userData.password!=="string")) return res.status(400).send({status:false,message:"wrong format of password"})
-if(!((userData.password).match(/^[a-zA-Z0-9!@#$%^&*]{8,15}$/))) return res.status(400).send({status:false,message:"length of password should be 8 to 15 characters"})
+if(typeof(userData.password)!=="string") return res.status(400).send({status:false,message:"wrong format of password"})
+if(!validation.validatePassword(userData.password)) return res.status(400).send({status:false,message:"length of password should be 8 to 15 characters"})
 
 if(userData.address){
     if(typeof(userData.address)!=='object') return res.status(400).send({status:false,message:"wrong address format"})
@@ -51,5 +51,30 @@ res.status(201).send({status:true,message:"success", data:createdUser})
     res.status(500).send({status:false,message:error.message})
  }
 }
+
+// const userLogin = async function(req,res){
+//     try{
+//         let {email,password} = req.body
+
+//         if(!email) return res.status(400).send({status:false,message:"please provide email"})
+//         if(!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) return res.status(400).send({status:false,message:"invalid email"})
+        
+//         if(!password) return res.status(400).send({status:false,message:"please provide password"})
+//         if(!(password.match(/^.(?=.{8,})(?=.[a-zA-Z])(?=.\d)./))) return res.status(400).send({status:false,message:"length of password should be 8 to 15 characters"})
+
+//         const user = await userModel.findOne({$and:[{email:email},{password:password}]})
+//         if(!user) return res.status(400).send({status:false,})
+
+//         let token = await jwt.sign({userId:user_id},"very secret string",{expiresIn:"60s"})
+//         let decodedToken = jwt.decode(token)
+
+//         return res.status(302).send({status:true,message:"success",data:{token:token,decodedToken}})
+
+
+//     }catch(err){
+//         res.status(500).send({status:false,message:err.message})
+//     }
+// }
+
 
 module.exports.createUser = createUser
