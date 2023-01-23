@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel.js');
 const validation=require("../validations/validation")
+const jwt = require('jsonwebtoken')
 
 const createUser = async function(req,res){
 try{
@@ -52,6 +53,33 @@ res.status(201).send({status:true,message:"success", data:createdUser})
  }
 }
 
+const login = async function (req, res) {
+    let {email, password} = req.body
+    //validation of email
+    if(!email) return res.status(400).send({status:false,message:"email is mandetory"})
+    if(typeof(email)!=="string") return res.status(400).send({status:false,message:"wrong format of email"})
+    if(!validation.validateEmail(email)) return res.status(400).send({status:false,message:"invalid email address"})
+     //validation of password
+    if(!password) return res.status(400).send({status:false,message:"password is mandetory"})
+    if(typeof(password)!=="string") return res.status(400).send({status:false,message:"wrong format of password"})
+    if(!validation.validatePassword(password)) return res.status(400).send({status:false,message:"length of password should be 8 to 15 characters"})   
+    
+    let isUserExist = await userModel.findOne({email:email,password:password})
+    if(!isUserExist)
+      return res.send("Email Id and password are incorrect")
+    const userToken = jwt.sign({userId:isUserExist._id},'secretKey',{expiresIn:60})
+  
+    const userTokenData = jwt.decode(userToken)
+    return res.send({
+      status: true,
+      message: 'Success',
+      data:{
+      userToken:userToken,
+      ...userTokenData
+      }
+    })
+
+};
 // const userLogin = async function(req,res){
 //     try{
 //         let {email,password} = req.body
@@ -78,3 +106,4 @@ res.status(201).send({status:true,message:"success", data:createdUser})
 
 
 module.exports.createUser = createUser
+module.exports.login = login
