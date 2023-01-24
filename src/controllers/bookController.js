@@ -8,7 +8,8 @@ const createBooks= async (req,res)=>{
     let data=req.body;
     let {title,excerpt,userId,ISBN,category,subcategory}=data
     
-    if(!title) return res.status(400).send({status:false,message:"title is mandatory"})
+    title = title.trim().toLowerCase();
+    if(!title || title=="") return res.status(400).send({status:false,message:"title is mandatory"})
     if(!validation.validate(title)) return res.status(400).send({status:false, message:"Please enter valid title"})
 
     if(!excerpt) return res.status(400).send({status:false, message:"excerpt is mandatory"})
@@ -33,17 +34,17 @@ const createBooks= async (req,res)=>{
 
     if(!checkUserId) return res.status(404).send({status:false, message:"User does not exist"})
 
-    const checkUniqueness= await bookModel.findOne({$or:[{title:title},{ISBN:ISBN}]})
+    const checkUniqueness= await bookModel.findOne({$or:[{title:title}, {ISBN:ISBN}]})
 
     if (checkUniqueness) {
-    if(checkUniqueness.title==title) return res.status(400).send({status:false, message:"title already exist"})
-    if(checkUniqueness.ISBN==ISBN) return res.status(400).send({status:false,message:"ISBN already exist"})
+    if(checkUniqueness.title == title) return res.status(400).send({status:false, message:"title already exist"})
+    if(checkUniqueness.ISBN == ISBN) return res.status(400).send({status:false, message:"ISBN already exist"})
     }
 
     let createBook= await bookModel.create(data)
     res.status(201).send({status:true, message:"Success", data:createBook})    
     } catch(err){
-        res.status(500).send({status:false,message:err.message})
+        res.status(500).send({status:false, message:err.message})
     }
 }
 
@@ -59,7 +60,8 @@ const getBooks=async(req, res)=>{
 
     if(subcategory) filter.subcategory = subcategory
 
-    let allBooks = await bookModel.find(filter).select({ISBN:0, subcategory:0, __V:0, createdAt:0, updatedAt:0})
+    let allBooks = await bookModel.find(filter).select({ISBN:0, subcategory:0, __V:0, createdAt:0, updatedAt:0}).sort({title:1})
+
     if (allBooks.length == 0) {
         return res.status(404).send({status:false, message:"No book exist in the collection"})
     }

@@ -10,7 +10,7 @@ router.post("/login", userController.login)
 
 router.post("/books", bookController.createBooks)
 
-router.get("/books", authentication, bookController.getBooks)
+router.get("/books", bookController.getBooks)
 
 
 
