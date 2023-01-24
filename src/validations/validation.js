@@ -1,10 +1,13 @@
-const validate= function(a){
+const validate = function(a){
 if(a.match (/^([a-z A-Z]){2,50}$/)) return true
 }
 
-const validateObjectId =function(a){
-    if(a.match(/^[a-f\d]{24}$/i)) return true;
+const validateTitle = function(a){
+if(a.match (/^([a-z A-Z\d]){2,50}$/)) return true
 }
+// const validateObjectId = function(a){
+//     if(a.match(/^[a-f\d]{24}$/i)) return true;
+// }
 
 const validateISBN= function(a){
     if(a.match(/^.*(?=.{10,13})(?=.*\d).*/)) return true
@@ -23,4 +26,4 @@ const validatePhone = function(a){
 }
 
 
-module.exports={validate,validateObjectId,validateISBN,validateEmail,validatePassword,validatePhone}
+module.exports={validate,validateTitle,validateISBN,validateEmail,validatePassword,validatePhone}
