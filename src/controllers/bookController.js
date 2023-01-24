@@ -1,6 +1,6 @@
 const bookModel=require("../models/bookModel")
 const userModel=require("../models/userModel")
-const validation=require("../validations/validation")
+const validation=require("../validation/validation")
 const validId = require('valid-objectid');
 const moment = require('moment')
 moment.suppressDeprecationWarnings = true;
@@ -13,22 +13,28 @@ const createBooks= async (req,res)=>{
     
     title = title.trim().toLowerCase();
     if(!title || title == "") return res.status(400).send({status:false,message:"title is mandatory"})
+    if(typeof(title) != "string") return res.status(400).send({status:false, message:"Invalid title format"})
     if(!validation.validateTitle(title)) return res.status(400).send({status:false, message:"Please enter valid title"})
 
     if(!excerpt) return res.status(400).send({status:false, message:"excerpt is mandatory"})
+    if(typeof(excerpt) != "string") return res.status(400).send({status:false, message:"Invalid excerpt format"})
     if(!validation.validateTitle(excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
 
     if(!userId) return res.status(400).send({status:false, message:"user Id is mandatory"})
+    if(typeof(userId) != "string") return res.status(400).send({status:false, message:"Invalid userId format"})
     if(!validId.isValid(userId)) return res.status(400).send({status:false, message:"Please enter valid userId"})
 
     if(!ISBN) return res.status(400).send({status:false, message:"ISBN is mandatory"})
+    if(typeof(ISBN) != "string") return res.status(400).send({status:false, message:"Invalid ISBN format"})
     if(!validation.validateISBN(ISBN)) return res.status(400).send({status:false, message:"Please enter valid ISBN"})
 
     if(!category) return res.status(400).send({status:false, message:"category is mandatory"})
+    if(typeof(category) != "string") return res.status(400).send({status:false, message:"Invalid category format"})
     if(!validation.validate(category)) return res.status(400).send({status:false, message:"Please enter valid category"})
 
 
     if(!subcategory) return res.status(400).send({status:false, message:"subcategory is mandatory"})
+    if(typeof(subcategory) != "string") return res.status(400).send({status:false, message:"Invalid subcategory format"})
     if(!validation.validate(subcategory)) return res.status(400).send({status:false, message:"Please enter valid subcategory"})
 
     if(!releasedAt) return res.status(400).send({status:false, message:"releasedAt is mandatory"})
@@ -136,4 +142,20 @@ const updateBooks=async(req, res)=>{
 
 }
 
-module.exports={createBooks, getBooks, updateBooks}
+const deleteBooks= async (req,res)=>{
+    try{
+    let bookId=req.params.bookId;
+
+    if(!validation.validateObjectId(bookId)) return res.status(400).send({status:false, message:"Please enter valid bookId"})
+
+    let bookDelete= await bookModel.findOneAndUpdate({$and:[{_id:bookId},{isDeleted:false}]},{$set:{isDeleted:true}},{new:true})
+    
+    if(!bookDelete) return res.status(404).send({status:false, message:"Book not found"})
+    
+    res.status(200).send({status:true, message:"Success",data:bookDelete })
+} catch(err){
+    res.status(500).send({status:false, message:err.message})
+}
+}
+
+module.exports={createBooks, getBooks, updateBooks,deleteBooks}

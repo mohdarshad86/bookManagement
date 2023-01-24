@@ -1,31 +1,31 @@
 const userModel = require('../models/userModel.js');
-const validation=require("../validations/validation")
+const validation=require("../validation/validation")
 const jwt = require('jsonwebtoken')
 
 const createUser = async function(req,res){
 try{
 const userData = req.body
 
-if(!userData.title || userData.title == "") return res.status(400).send({ status : false, message : "tittle is mandetory" })
+if(!userData.title || userData.title == "") return res.status(400).send({ status : false, message : "tittle is mandatory" })
 if(typeof(userData.title) !== 'string') return res.status(400).send({ status:false, message:"wrong format of title"})
 if(!(["Mr", "Mrs", "Miss"].includes(userData.title))) return res.status(400).send({status : false, message:"title can only contain Mr,Mrs, Miss"})
 
 userData.name.trim()
-if(!userData.name || userData.name == "") return res.status(400).send({status:false, message:"name is mandetory"})
+if(!userData.name || userData.name == "") return res.status(400).send({status:false, message:"name is mandatory"})
 if(typeof(userData.name) !== 'string') return res.status(400).send({status:false, message:"wrong format of name"})
 if(!validation.validate(userData.name)) return res.status(400).send({status:false, message:"invalid name"})
 
 userData.phone.trim()
-if(!userData.phone) return res.status(400).send({status:false, message:"phone is mandetory"})
+if(!userData.phone) return res.status(400).send({status:false, message:"phone is mandatory"})
 if(typeof(userData.phone) !== "string") return res.status(400).send({status:false, message:"wrong format of phone"})
 if(!validation.validatePhone(userData.phone)) return res.status(400).send({status:false, message:"invalid phone number"})
 
 userData.email.trim()
-if(!userData.email) return res.status(400).send({status:false, message:"email is mandetory"})
+if(!userData.email) return res.status(400).send({status:false, message:"email is mandatory"})
 if(typeof(userData.email) !== "string") return res.status(400).send({status:false, message:"wrong format of email"})
 if(!validation.validateEmail(userData.email)) return res.status(400).send({status:false, message:"invalid email address"})
 
-if(!userData.password) return res.status(400).send({status:false, message:"password is mandetory"})
+if(!userData.password) return res.status(400).send({status:false, message:"password is mandatory"})
 if(typeof(userData.password) !== "string") return res.status(400).send({status:false, message:"wrong format of password"})
 if(!validation.validatePassword(userData.password)) return res.status(400).send({status:false, message:"length of password should be 8 to 15 characters"})
 
@@ -59,11 +59,11 @@ res.status(201).send({status:true, message:"success", data:createdUser})
 const login = async function (req, res) {
     let {email, password} = req.body
     //validation of email
-    if(!email) return res.status(400).send({status:false, message:"email is mandetory"})
+    if(!email) return res.status(400).send({status:false, message:"email is mandatory"})
     if(typeof(email) !== "string") return res.status(400).send({status:false, message:"wrong format of email"})
     if(!validation.validateEmail(email)) return res.status(400).send({status:false,message:"invalid email address"})
      //validation of password
-    if(!password) return res.status(400).send({status:false, message:"password is mandetory"})
+    if(!password) return res.status(400).send({status:false, message:"password is mandatory"})
     if(typeof(password) !== "string") return res.status(400).send({status:false, message:"wrong format of password"})
     if(!validation.validatePassword(password)) return res.status(400).send({status:false, message:"length of password should be 8 to 15 characters"})   
     
