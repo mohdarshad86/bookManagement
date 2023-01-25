@@ -73,7 +73,7 @@ const login = async function (req, res) {
     const userToken = jwt.sign({userId:isUserExist._id}, 'secretKey', {expiresIn:60})
   
     const userTokenData = jwt.decode(userToken)
-    return res.send({
+    return res.status(200).send({
       status: true,
       message: 'Success',
       data:{
