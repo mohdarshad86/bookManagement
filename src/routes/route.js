@@ -9,12 +9,11 @@ router.post("/register", userController.createUser)
 router.post("/login", userController.login)
 //books
 router.post("/books", bookController.createBooks)
-
 router.get("/books", bookController.getBooks)
+router.get("/books/:bookId", bookController.getBooksById)
 
 //update
 router.put("/books/:bookId", bookController.updateBooks)
-
 router.delete("/books/:bookId", authentication,authorisation,bookController.deleteBooks)
 
 

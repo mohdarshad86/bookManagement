@@ -92,6 +92,34 @@ const getBooks=async(req, res)=>{
     return res.status(200).send({status:true, data:allBooks})
 }
 
+const getBooksById = async function (req, res) {
+    try{
+      const bookId= req.params.bookId
+      // console.log(bookId)/
+      const getBooksData = await bookModel.findOne({_id:bookId,isDeleted:false})
+      // console.log(getBooksData)
+      if(!getBooksData) 
+        return res.status(404).send({
+          status: false,
+          message: "Book Id Doesn't exist"
+        })
+      return res.status(200).send({
+        status: true,
+        message: 'Books List',
+        data: getBooksData
+      })
+    }
+    catch{
+      return res.status(500).send({
+        status: false,
+        message: "->Server Side Error"
+      })
+    }
+
+    
+
+};
+
 const updateBooks=async(req, res)=>{
 
     let bookId = req.params.bookId
@@ -158,4 +186,4 @@ const deleteBooks= async (req,res)=>{
 }
 }
 
-module.exports={createBooks, getBooks, updateBooks,deleteBooks}
+module.exports={createBooks, getBooks, getBooksById,updateBooks,deleteBooks}
