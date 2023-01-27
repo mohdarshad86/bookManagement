@@ -1,33 +1,36 @@
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Schema.Types.ObjectId;
+const mongoose = require('mongoose');
 
-const reviewSchema = new mongoose.Schema(
-    {
+
+const reviewsSchema = new mongoose.Schema({
+
         bookId: {
-            type:ObjectId, 
-            ref:book,
-            required:true 
+            type : mongoose.Schema.Types.ObjectId,
+            required :true,
+            ref : "book"
         },
-
         reviewedBy: {
-            type:string, 
-            required:true, 
-            default :'Guest'
+            type : String,
+            required:true,
+            default : 'Guest',
+            trim : true,
+            lowercase : true
         },
         reviewedAt: {
-            type:Date, 
+            type : Date,
             required:true
         },
         rating: {
-            type:number, 
-            min :1, max:5,
-            required:true},
-        review: {
-            type:string },
-
+            type : Number,
+             minLength : 1,
+              maxLength : 5,
+              required:true
+            },
+        review: String,
         isDeleted: {
-            type:boolean,
-             default: false}
-    },{ timestamps: true })
+            type : Boolean,
+             default: false
+            },
+},{timestamps:true}
+)
 
-    module.exports = mongoose.model("review", reviewSchema);
+module.exports = mongoose.model('review',reviewsSchema)
