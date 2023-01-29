@@ -1,10 +1,14 @@
 const userModel = require('../models/userModel.js');
-const validation = require("../validation/validation")
+const validation = require("../validations/validation")
 const jwt = require('jsonwebtoken')
 
 const createUser = async function (req, res) {
     try {
         const userData = req.body
+
+        if (Object.keys(userData).length==0) {
+            return res.status(400).send({status:false,message:"Please send mandatory field"})
+        }
 
         if (!userData.title || userData.title.trim() == "") return res.status(400).send({ status: false, message: "tittle is mandatory" })
         if (typeof (userData.title) !== 'string') return res.status(400).send({ status: false, message: "wrong format of title" })
@@ -40,6 +44,7 @@ const createUser = async function (req, res) {
             }
             if (userData.address.pincode) {
                 if (typeof (userData.address.pincode) !== "string") return res.status(400).send({ status: false, message: "wrong pincode format" })
+                if(!userData.address.pincode.match(/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/)) return res.status(400).send({status:false,message:'invalid pin-code'})
             }
         }
 
@@ -62,6 +67,9 @@ const login = async function (req, res) {
     //  }
     try {
         let { email, password } = req.body
+        if (Object.keys(req.body).length==0) {
+            return res.status(400).send({status:false,message:"Please send mandatory field"})
+        }
     //validation of email
     if (!email || email.trim()=="") return res.status(400).send({ status: false, message: "email is mandatory" })
     if (typeof (email) !== "string") return res.status(400).send({ status: false, message: "wrong format of email" })

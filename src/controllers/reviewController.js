@@ -1,13 +1,18 @@
 const mongoose = require('mongoose');
 
 const bookModel = require('../models/bookModel');
-const reviewModel = require('../models/reviewsModel');
+const reviewModel = require('../models/reviewModel');
 
 const validators = require('../validations/validation')
 
 
 const createReviws = async function (req, res) {
     try {
+
+        if (Object.keys(req.body).length==0) {
+            return res.status(400).send({status:false,message:"Please send mandatory field"})
+        }
+
         if (!req.body.bookId) {
             req.body.bookId = req.params.bookId
         }
@@ -56,6 +61,7 @@ const updateReviews = async function (req, res) {
         if (!mongoose.isValidObjectId(reviewId)) return res.status(400).send({ status: false, message: "invalid reviewId" });
 
         let data = req.body;
+  
         let { review, rating, reviewedBy } = data;
 
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "provide some data to update" });
