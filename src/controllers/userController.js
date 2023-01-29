@@ -60,7 +60,8 @@ const login = async function (req, res) {
     // for(x in req.body){
     //     req.body[x]=req.body[x].trim()
     //  }
-    let { email, password } = req.body
+    try {
+        let { email, password } = req.body
     //validation of email
     if (!email || email.trim()=="") return res.status(400).send({ status: false, message: "email is mandatory" })
     if (typeof (email) !== "string") return res.status(400).send({ status: false, message: "wrong format of email" })
@@ -85,12 +86,12 @@ const login = async function (req, res) {
         data: {
             userToken: userToken,
             ...userTokenData
-
         }
     })
-
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message })
+    }
 };
-
 
 module.exports.createUser = createUser
 module.exports.login = login

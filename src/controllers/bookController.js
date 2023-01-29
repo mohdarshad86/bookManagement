@@ -112,6 +112,7 @@ const getBooksById = async function (req, res) {
             status: false,
             message: "Book Id Doesn't exist"
           })
+
         return res.status(200).send({
           status: true,
           message: 'Books List',
@@ -141,7 +142,8 @@ const getBooksById = async function (req, res) {
 
 const updateBooks = async(req, res)=>{
 
-    let bookId = req.params.bookId
+    try {
+        let bookId = req.params.bookId
     
     if (!bookId) {
         return res.status(400).send({status:false, msg:"please send valid params"})
@@ -167,7 +169,6 @@ const updateBooks = async(req, res)=>{
     if(!validation.validateTitle(data.excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
     }
 
-   // if(!data.releasedAt) return res.status(400).send({status:false, message:"releasedAt is mandatory"})
   if(data.releasedAt){
       if(typeof(data.releasedAt) != "string") return res.status(400).send({status:false, message:"Invalid releasedAt format"})
     if(moment(data.releasedAt).format("YYYY-MM-DD") != data.releasedAt) return res.status(400).send({status:false, message:"Invalid date format"})
@@ -188,6 +189,12 @@ const updateBooks = async(req, res)=>{
     }
 
     return res.status(200).send({status:true, data:updateBook})
+    } catch (error) {
+        return res.status(500).send({
+            status: false,
+            message: error.message
+          })
+    }
 
 }
 
@@ -199,7 +206,7 @@ const deleteBooks= async (req,res)=>{
 
     let bookDelete= await bookModel.findOneAndUpdate({$and:[{_id:bookId},{isDeleted:false}]},{$set:{isDeleted:true}},{new:true})
     
-    if(!bookDelete) return res.status(404).send({status:false, message:"Book not found"})
+    if(!bookDelete) return res.status(404).send({status:false, message:"Book not found for this ID"})
     
     res.status(200).send({status:true, message:"Success",data:bookDelete })
 } catch(err){
