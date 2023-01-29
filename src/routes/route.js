@@ -2,20 +2,23 @@ const express = require("express");
 const router = express.Router();
 const bookController=require("../controllers/bookController")
 const userController=require("../controllers/userController")
-const { authentication, authorisation } = require("../middlewares/middleware")
+const { authentication, authorisation } = require("../middlewares/auth")
 
 //user
 router.post("/register", userController.createUser)
 router.post("/login", userController.login)
 //books
-router.post("/books", bookController.createBooks)
-router.get("/books", bookController.getBooks)
-router.get("/books/:bookId", bookController.getBooksById)
+router.post("/books",authentication, bookController.createBooks)
+router.get("/books",authentication, bookController.getBooks)
+router.get("/books/:bookId",authentication, bookController.getBooksById)
 
 //update
-router.put("/books/:bookId", bookController.updateBooks)
+router.put("/books/:bookId",authentication,authorisation, bookController.updateBooks)
 router.delete("/books/:bookId", authentication,authorisation,bookController.deleteBooks)
 
+router.all('/*',function(req,res){
+    res.status(400).send({status:false,message:"Invalid URL"}) 
+})
 
 
 

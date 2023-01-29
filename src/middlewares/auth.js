@@ -1,42 +1,33 @@
 const jwt = require('jsonwebtoken')
-const { isValidObjectId } = require('mongoose')
-const userModel = require('../models/userModel')
-const bookModel = require("../models/bookModel");
 
-const authentication = async function (req, res, next) {
+const authentication = function (req, res, next) {
     try {
         let token = req.headers.token
-        if (!token)
-            return res.status(401).send({
-                status: false,
-                message: "Please login first"
-            })
-        let dataOfToken = jwt.verify(token, 'secretKey', (err, res) => {
-            if (err)
-                return "Token Expired"
-            return res
+
+        if (!token) return res.status(400).send({ status: false, message: "missing mandatory header" })
+
+        jwt.verify(token, "secretKey", function (err, decodedToken) {
+            
+            if (decodedToken) {
+                req.userId = decodedToken.userId
+                next()
+            } else {
+                return res.status(401).send({ status: false, message: err.message })
+            //   return res.status(401).send({ status: false, message: "Token is invalid" })
+            }
         })
-        if (dataOfToken == "Token Expired")
-            return res.status(403).send({
-                status: false,
-                message: "Token Expired so please login again"
-            })
-        next()
-    }
-    catch {
-        return res.status(500).send({
-            status: false,
-            message: "Server Side Error"
-        })
+    } catch (err) {
+        res.status(500).send({ status: false, message: err.message })
     }
 }
+
 
 const authorisation = async function (req, res, next) {
     try {
         const token = req.headers.token
         const userIdInToken = jwt.decode(token).userId
         const booksId = req.params.bookId
-        //console.log(booksId)
+
         if (!isValidObjectId(booksId)) {
             return res.status(400).send({
                 status: false,
@@ -60,10 +51,10 @@ const authorisation = async function (req, res, next) {
     catch {
         return res.status(500).send({
             status: false,
-            message: "<--Server Side Error"
-        })
-    }
+            message: "Server Side Error"
+   })
+}
 
 }
 
-module.exports = { authentication, authorisation }
+module.exports = { authentication, authorisation}

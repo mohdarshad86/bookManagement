@@ -6,14 +6,14 @@ const createUser = async function (req, res) {
     try {
         const userData = req.body
 
-        if (!userData.title || userData.title == "") return res.status(400).send({ status: false, message: "tittle is mandatory" })
+        if (!userData.title || userData.title.trim() == "") return res.status(400).send({ status: false, message: "tittle is mandatory" })
         if (typeof (userData.title) !== 'string') return res.status(400).send({ status: false, message: "wrong format of title" })
-        if (!(["Mr", "Mrs", "Miss"].includes(userData.title))) return res.status(400).send({ status: false, message: "title can only contain Mr,Mrs, Miss" })
+        if (!(["Mr", "Mrs", "Miss"].includes(userData.title.trim()))) return res.status(400).send({ status: false, message: "title can only contain Mr,Mrs, Miss" })
+        userData.title=userData.title.trim()
 
-        userData.name.trim()
-        if (!userData.name || userData.name == "") return res.status(400).send({ status: false, message: "name is mandatory" })
+        if (!userData.name || userData.name.trim() == "") return res.status(400).send({ status: false, message: "name is mandatory" })
         if (typeof (userData.name) !== 'string') return res.status(400).send({ status: false, message: "wrong format of name" })
-        if (!validation.validate(userData.name)) return res.status(400).send({ status: false, message: "invalid name" })
+        if (!validation.validate(userData.name.trim())) return res.status(400).send({ status: false, message: "invalid name" })
 
         userData.phone.trim()
         if (!userData.phone) return res.status(400).send({ status: false, message: "phone is mandatory" })
@@ -69,43 +69,24 @@ const login = async function (req, res) {
 
     let isUserExist = await userModel.findOne({ email: email, password: password })
     if (!isUserExist)
-        return res.send("Email Id and password are incorrect")
-    const userToken = jwt.sign({ userId: isUserExist._id }, 'secretKey', { expiresIn: 60 })
+        return res.status(401).send({status:false, message:"Email Id and password are incorrect"})
+    const userToken = jwt.sign({ userId: isUserExist._id }, 'secretKey', { expiresIn: 1800 })
 
     const userTokenData = jwt.decode(userToken)
+    userTokenData.iat = new Date(userTokenData.iat*1000).toGMTString()
+    userTokenData.exp = new Date(userTokenData.exp*1000).toGMTString()
+
     return res.status(200).send({
         status: true,
         message: 'Success',
         data: {
             userToken: userToken,
             ...userTokenData
+
         }
     })
 
 };
-// const userLogin = async function(req,res){
-//     try{
-//         let {email,password} = req.body
-
-//         if(!email) return res.status(400).send({status:false,message:"please provide email"})
-//         if(!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) return res.status(400).send({status:false,message:"invalid email"})
-
-//         if(!password) return res.status(400).send({status:false,message:"please provide password"})
-//         if(!(password.match(/^.(?=.{8,})(?=.[a-zA-Z])(?=.\d)./))) return res.status(400).send({status:false,message:"length of password should be 8 to 15 characters"})
-
-//         const user = await userModel.findOne({$and:[{email:email},{password:password}]})
-//         if(!user) return res.status(400).send({status:false,})
-
-//         let token = await jwt.sign({userId:user_id},"very secret string",{expiresIn:"60s"})
-//         let decodedToken = jwt.decode(token)
-
-//         return res.status(302).send({status:true,message:"success",data:{token:token,decodedToken}})
-
-
-//     }catch(err){
-//         res.status(500).send({status:false,message:err.message})
-//     }
-// }
 
 
 module.exports.createUser = createUser

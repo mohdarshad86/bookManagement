@@ -23,6 +23,8 @@ const createBooks= async (req,res)=>{
     if(!userId) return res.status(400).send({status:false, message:"user Id is mandatory"})
     if(typeof(userId) != "string") return res.status(400).send({status:false, message:"Invalid userId format"})
     if(!validId.isValid(userId)) return res.status(400).send({status:false, message:"Please enter valid userId"})
+    
+    if(userId !== req.userId) return res.status(403).send({status:false,message:"you are not authorised for this action"})
 
     if(!ISBN) return res.status(400).send({status:false, message:"ISBN is mandatory"})
     if(typeof(ISBN) != "string") return res.status(400).send({status:false, message:"Invalid ISBN format"})
@@ -120,7 +122,7 @@ const getBooksById = async function (req, res) {
 
 };
 
-const updateBooks=async(req, res)=>{
+const updateBooks = async(req, res)=>{
 
     let bookId = req.params.bookId
     
