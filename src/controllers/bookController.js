@@ -4,6 +4,7 @@ const validation=require("../validation/validation")
 const validId = require('valid-objectid');
 const moment = require('moment')
 moment.suppressDeprecationWarnings = true;
+const mongoose = require('mongoose')
 
 
 const createBooks= async (req,res)=>{
@@ -97,6 +98,8 @@ const getBooks=async(req, res)=>{
 const getBooksById = async function (req, res) {
     try{
       const bookId= req.params.bookId
+if(!mongoose.isValidObjectId(bookId)) return res.status(400).send({status:false,message:"invalid bookId"})
+
       // console.log(bookId)/
       const getBooksData = await bookModel.findOne({_id:bookId,isDeleted:false})
       // console.log(getBooksData)
@@ -134,35 +137,37 @@ const updateBooks = async(req, res)=>{
         return res.status(400).send({status:false, msg:"please send valid id"})
     }
 
-    let {title, excerpt, releasedAt, ISBN} = req.body
+    let data = req.body
 
-    if (title) {
-        title = title.trim().toLowerCase();
+    if (data.title) {
+        data.title = data.title.trim().toLowerCase();
 
-    if(title=="") return res.status(400).send({status:false,message:"Please input new title to update"})
-    if(!validation.validateTitle(title)) return res.status(400).send({status:false, message:"Please enter valid title"})
+    if(data.title=="") return res.status(400).send({status:false,message:"Please input new title to update"})
+    if(!validation.validateTitle(data.title)) return res.status(400).send({status:false, message:"Please enter valid title"})
     }
 
-    if (excerpt) {
-        excerpt = excerpt.trim()
+    if (data.excerpt) {
+        data.excerpt = data.excerpt.trim()
 
-        if(excerpt == "") return res.status(400).send({status:false, message:"Please input new excerpt to update "})
-    if(!validation.validateTitle(excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
+        if(data.excerpt == "") return res.status(400).send({status:false, message:"Please input new excerpt to update "})
+    if(!validation.validateTitle(data.excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
     }
 
-    if(!releasedAt) return res.status(400).send({status:false, message:"releasedAt is mandatory"})
-    if(typeof(releasedAt) != "string") return res.status(400).send({status:false, message:"Invalid releasedAt format"})
-    if(moment(releasedAt).format("YYYY-MM-DD") != releasedAt) return res.status(400).send({status:false, message:"Invalid date format"})
+   // if(!data.releasedAt) return res.status(400).send({status:false, message:"releasedAt is mandatory"})
+  if(data.releasedAt){
+      if(typeof(data.releasedAt) != "string") return res.status(400).send({status:false, message:"Invalid releasedAt format"})
+    if(moment(data.releasedAt).format("YYYY-MM-DD") != data.releasedAt) return res.status(400).send({status:false, message:"Invalid date format"})
+}
 
     //we can do check unique or deleted together
-    let checkUnique = await bookModel.findOne({$or:[{title:title}, {ISBN:ISBN}]})
+    let checkUnique = await bookModel.findOne({$or:[{title:data.title}, {ISBN:data.ISBN}]})
 
     if (checkUnique) {
         return res.status(400).send({status:false, msg:"Duplicate title or ISBN"})
     }
 
     //or we can check it here also
-    let updateBook = await bookModel.findOneAndUpdate({_id:bookId, isDeleted:false}, {$set:{title:title, excerpt:excerpt, releasedAt:releasedAt, ISBN:ISBN}}, {new:true});
+    let updateBook = await bookModel.findOneAndUpdate({_id:bookId, isDeleted:false}, {$set:data}, {new:true});
 
     if (!updateBook) {
         return res.status(404).send({status:false, msg:"The book does not exist"})
@@ -176,7 +181,7 @@ const deleteBooks= async (req,res)=>{
     try{
     let bookId=req.params.bookId;
 
-    if(!validation.validateObjectId(bookId)) return res.status(400).send({status:false, message:"Please enter valid bookId"})
+    if(!mongoose.isValidObjectId(bookId)) return res.status(400).send({status:false, message:"Please enter valid bookId"})
 
     let bookDelete= await bookModel.findOneAndUpdate({$and:[{_id:bookId},{isDeleted:false}]},{$set:{isDeleted:true}},{new:true})
     

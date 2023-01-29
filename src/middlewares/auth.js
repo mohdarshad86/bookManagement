@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
+const bookModel =require('../models/bookModel')
 
 const authentication = function (req, res, next) {
     try {
@@ -26,14 +28,17 @@ const authorisation = async function (req, res, next) {
     try {
         const token = req.headers.token
         const userIdInToken = jwt.decode(token).userId
+
         const booksId = req.params.bookId
 
-        if (!isValidObjectId(booksId)) {
+        if (!mongoose.isValidObjectId(booksId)) {
             return res.status(400).send({
                 status: false,
                 message: "Please enter Valid Object Id"
             })
         }
+        console.log(userIdInToken);
+
         const userId = await bookModel.findById(booksId).select({ userId: 1,_id:0 })
         if (!userId) {
             return res.status(404).send({
@@ -41,17 +46,19 @@ const authorisation = async function (req, res, next) {
                 message: "Book Id Doesn't exist"
             })
         }
+
         if (userId.userId != userIdInToken)
             return res.status(403).send({
                 status: false,
                 message: "You are not Authorized"
             })
+
         next()
     }
-    catch {
+    catch(err){
         return res.status(500).send({
             status: false,
-            message: "Server Side Error"
+            message: err.message
    })
 }
 
