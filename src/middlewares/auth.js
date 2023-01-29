@@ -37,8 +37,6 @@ const authorisation = async function (req, res, next) {
                 message: "Please enter Valid Object Id"
             })
         }
-        console.log(userIdInToken);
-
         const userId = await bookModel.findById(booksId).select({ userId: 1,_id:0 })
         if (!userId) {
             return res.status(404).send({

@@ -57,13 +57,16 @@ const createUser = async function (req, res) {
 }
 
 const login = async function (req, res) {
+    // for(x in req.body){
+    //     req.body[x]=req.body[x].trim()
+    //  }
     let { email, password } = req.body
     //validation of email
-    if (!email) return res.status(400).send({ status: false, message: "email is mandatory" })
+    if (!email || email.trim()=="") return res.status(400).send({ status: false, message: "email is mandatory" })
     if (typeof (email) !== "string") return res.status(400).send({ status: false, message: "wrong format of email" })
     if (!validation.validateEmail(email)) return res.status(400).send({ status: false, message: "invalid email address" })
     //validation of password
-    if (!password) return res.status(400).send({ status: false, message: "password is mandatory" })
+    if (!password || password.trim()=="") return res.status(400).send({ status: false, message: "password is mandatory" })
     if (typeof (password) !== "string") return res.status(400).send({ status: false, message: "wrong format of password" })
     if (!validation.validatePassword(password)) return res.status(400).send({ status: false, message: "length of password should be 8 to 15 characters" })
 

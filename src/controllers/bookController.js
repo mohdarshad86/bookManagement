@@ -1,5 +1,6 @@
 const bookModel=require("../models/bookModel")
 const userModel=require("../models/userModel")
+const reviewModel = require('../models/reviewModel');
 const validation=require("../validation/validation")
 const validId = require('valid-objectid');
 const moment = require('moment')
@@ -97,32 +98,45 @@ const getBooks=async(req, res)=>{
 
 const getBooksById = async function (req, res) {
     try{
-      const bookId= req.params.bookId
-if(!mongoose.isValidObjectId(bookId)) return res.status(400).send({status:false,message:"invalid bookId"})
-
-      // console.log(bookId)/
-      const getBooksData = await bookModel.findOne({_id:bookId,isDeleted:false})
-      // console.log(getBooksData)
-      if(!getBooksData) 
-        return res.status(404).send({
-          status: false,
-          message: "Book Id Doesn't exist"
+        const bookId= req.params.bookId
+        if (!validId.isValid(bookId)) {
+          return res.status(400).send({
+              status: false,
+              message: "Please enter Valid Object Id"
+          })
+        }
+        const getBooksData = await bookModel.findOne({_id:bookId,isDeleted:false}).select({__v:0})
+        const getreviews = await reviewModel.find({bookId:bookId,isDeleted:false}).select({isDeleted:0,createdAt:0,updatedAt:0,__v:0})
+        if(!getBooksData) 
+          return res.status(404).send({
+            status: false,
+            message: "Book Id Doesn't exist"
+          })
+        return res.status(200).send({
+          status: true,
+          message: 'Books List',
+          data: {
+            _id: getBooksData._id,
+            title: getBooksData.title,
+            excerpt: getBooksData.excerpt,
+            userId: getBooksData.userId,
+            category: getBooksData.category,
+            subcategory: getBooksData.subcategory,
+            isDeleted: getBooksData.isDeleted,
+            reviews: getBooksData.reviews,
+            releasedAt: getBooksData.releasedAt,
+            createdAt: getBooksData.createdAt,
+            updatedAt: getBooksData.updatedAt,
+            reviewsData: getreviews
+          }
         })
-      return res.status(200).send({
-        status: true,
-        message: 'Books List',
-        data: getBooksData
-      })
-    }
-    catch{
-      return res.status(500).send({
-        status: false,
-        message: "->Server Side Error"
-      })
-    }
-
-    
-
+      }
+      catch(err){
+        return res.status(500).send({
+          status: false,
+          message: err.message
+        })
+      }
 };
 
 const updateBooks = async(req, res)=>{
