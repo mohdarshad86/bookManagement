@@ -12,6 +12,7 @@ const bookSchema = new mongoose.Schema(
     },
     excerpt: {
       type: String,
+      trim:true,
       required: true,
     },
     userId: {
@@ -27,10 +28,12 @@ const bookSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
+      trim:true
     },
     subcategory: {
       type: String,
       required: true,
+      trim:true
     },
     reviews: {
         type: Number,

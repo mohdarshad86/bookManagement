@@ -15,7 +15,8 @@
     "moment": "^2.29.4",
     "mongoose": "^6.8.4",
     "npm": "^9.3.1",
-    "valid-objectid": "^0.0.2"
+    "valid-objectid": "^0.0.2",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

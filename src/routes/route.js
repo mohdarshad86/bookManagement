@@ -21,7 +21,7 @@ router.delete("/books/:bookId", authentication,authorisation,bookController.dele
 //REVIEW
 router.post("/books/:bookId/review", reviewController.createReviws)
 router.post("/books/:bookId/review/:reviewId", reviewController.updateReviews)
-router.post("/books/:bookId/review/:reviewId", reviewController.deleteReviews)
+router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReviews)
 
 router.all('/*',function(req,res){
     res.status(400).send({status:false, message:"Invalid URL"}) 

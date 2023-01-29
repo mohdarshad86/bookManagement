@@ -4,13 +4,12 @@ const reviewModel = require('../models/reviewModel');
 const validation=require("../validations/validation")
 const {isValidObjectId}=require('mongoose')
 const moment = require('moment')
+const mongoose=require('mongoose')
 moment.suppressDeprecationWarnings = true;
 
 
 const createBooks= async (req,res)=>{
     try{
-        // OYE SUN, ISBN Net se uthana, that is valid ISBN(Take care of hyphen also)
-        //Thoda high level validation ho gya h humse
         
         let data = req.body;
         if (Object.keys(data).length==0) {
@@ -18,14 +17,13 @@ const createBooks= async (req,res)=>{
         }
     let {title,excerpt,userId,ISBN,category,subcategory, releasedAt} = data
     
-    title = title.trim().toLowerCase();
-    if(!title || title == "") return res.status(400).send({status:false,message:"title is mandatory"})
+    if(!title || title.trim() == "") return res.status(400).send({status:false,message:"title is mandatory"})
     if(typeof(title) != "string") return res.status(400).send({status:false, message:"Invalid title format"})
-    if(!validation.validateTitle(title)) return res.status(400).send({status:false, message:"Please enter valid title"})
+    if(!validation.validateTitle(title.trim())) return res.status(400).send({status:false, message:"Please enter valid title"})
 
     if(!excerpt) return res.status(400).send({status:false, message:"excerpt is mandatory"})
     if(typeof(excerpt) != "string") return res.status(400).send({status:false, message:"Invalid excerpt format"})
-    if(!validation.validateTitle(excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
+    if(!validation.validateTitle(excerpt.trim())) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
 
     if(!userId) return res.status(400).send({status:false, message:"user Id is mandatory"})
     if(typeof(userId) != "string") return res.status(400).send({status:false, message:"Invalid userId format"})
@@ -39,12 +37,12 @@ const createBooks= async (req,res)=>{
 
     if(!category) return res.status(400).send({status:false, message:"category is mandatory"})
     if(typeof(category) != "string") return res.status(400).send({status:false, message:"Invalid category format"})
-    if(!validation.validate(category)) return res.status(400).send({status:false, message:"Please enter valid category"})
+    if(!validation.validate(category.trim())) return res.status(400).send({status:false, message:"Please enter valid category"})
 
 
     if(!subcategory) return res.status(400).send({status:false, message:"subcategory is mandatory"})
     if(typeof(subcategory) != "string") return res.status(400).send({status:false, message:"Invalid subcategory format"})
-    if(!validation.validate(subcategory)) return res.status(400).send({status:false, message:"Please enter valid subcategory"})
+    if(!validation.validate(subcategory.trim())) return res.status(400).send({status:false, message:"Please enter valid subcategory"})
 
     if(!releasedAt) return res.status(400).send({status:false, message:"releasedAt is mandatory"})
     if(typeof(releasedAt) != "string") return res.status(400).send({status:false, message:"Invalid releasedAt format"})
@@ -57,7 +55,7 @@ const createBooks= async (req,res)=>{
     const checkUniqueness= await bookModel.findOne({$or:[{title:title}, {ISBN:ISBN}]})
 
     if (checkUniqueness) {
-    if(checkUniqueness.title == title) return res.status(400).send({status:false, message:"title already exist"})
+    if(checkUniqueness.title == title.trim()) return res.status(400).send({status:false, message:"title already exist"})
     if(checkUniqueness.ISBN == ISBN) return res.status(400).send({status:false, message:"ISBN already exist"})
     }
 
@@ -65,7 +63,7 @@ const createBooks= async (req,res)=>{
     res.status(201).send({status:true, message:"Success", data:createBook})    
     } catch(err){
         res.status(500).send({status:false, message:err.message})
-    }
+  }
 }
 
 const getBooks=async(req, res)=>{
@@ -136,9 +134,8 @@ const getBooksById = async function (req, res) {
 };
 
 const updateBooks = async(req, res)=>{
-
-    try {
-        let bookId = req.params.bookId
+    try{
+    let bookId = req.params.bookId
     
     if (!bookId) {
         return res.status(400).send({status:false, msg:"please send valid params"})
@@ -149,40 +146,47 @@ const updateBooks = async(req, res)=>{
     }
 
     let data = req.body
-    if (Object.keys(data).length==0) {
-        return res.status(400).send({status:false,message:"Please send data to Update"})
-    }
 
-    if (data.title) {
+    if (Object.keys(data).length==0) return res.status(400).send({status:false, message:"please send data to update"})
+
+    if(data.title){
+    if(typeof(data.title)=="string"){
         data.title = data.title.trim().toLowerCase();
-
-    if(data.title=="") return res.status(400).send({status:false,message:"Please input new title to update"})
-    if(!validation.validateTitle(data.title)) return res.status(400).send({status:false, message:"Please enter valid title"})
+    if(data.title.trim() == "") return res.status(400).send({status:false,message:"Please input new title to update"})
+    if(!validation.validateTitle(data.title.trim())) return res.status(400).send({status:false, message:"Please enter valid title"})
     }
-
-    if (data.excerpt) {
-        data.excerpt = data.excerpt.trim()
-
-        if(data.excerpt == "") return res.status(400).send({status:false, message:"Please input new excerpt to update "})
-    if(!validation.validateTitle(data.excerpt)) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
+    if(typeof(data.title)!="string") {
+        return res.status(400).send({status:false,message:"Invald format for title"})
     }
+}
 
-    if(data.releasedAt){
-        if(typeof(data.releasedAt) != "string") return res.status(400).send({status:false, message:"Invalid releasedAt format"})
-        if(moment(data.releasedAt).format("YYYY-MM-DD") != data.releasedAt) return res.status(400).send({status:false, message:"Invalid date format"})
+if(data.excerpt){
+    if (typeof(data.excerpt)=="string") {
+       data.excerpt = data.excerpt.trim()
+       if(typeof(data.excerpt)!="string") return res.status.send({status:false, message:"Invalid data format"})
+    if(data.excerpt.trim() == "") return res.status(400).send({status:false, message:"Please input new excerpt to update "})
+    if(!validation.validateTitle(data.excerpt.trim())) return res.status(400).send({status:false, message:"Please enter valid excerpt"})
     }
+    if(typeof(data.excerpt)!="string") {
+        return res.status(400).send({status:false,message:"Invald format for excerpt"})
+    }
+}
 
-    if(data.ISBN){
-    if(!data.ISBN) return res.status(400).send({status:false, message:"ISBN is mandatory"})
-        if(typeof(data.ISBN) != "string") return res.status(400).send({status:false, message:"Invalid ISBN format"})
-        if(!validation.validateISBN(data.ISBN)) return res.status(400).send({status:false, message:"Please enter valid ISBN"})
-    }
+if(data.releasedAt){
+  if(typeof(data.releasedAt)=="string"){
+      if(data.releasedAt.trim()== "") return res.status(400).send({status:false, message:"Please input new releasedAt to update"})
+    if(moment(data.releasedAt.trim()).format("YYYY-MM-DD") != data.releasedAt.trim()) return res.status(400).send({status:false, message:"Invalid date format"})
+}
+if(typeof(data.releasedAt)!="string") {
+    return res.status(400).send({status:false,message:"Invald format for Date"})
+}
+}
 
     //we can do check unique or deleted together
     let checkUnique = await bookModel.findOne({$or:[{title:data.title}, {ISBN:data.ISBN}]})
 
     if (checkUnique) {
-        return res.status(400).send({status:false, message:"Duplicate title or ISBN"})
+        return res.status(400).send({status:false, msg:"Duplicate title or ISBN"})
     }
 
     //or we can check it here also
@@ -193,13 +197,10 @@ const updateBooks = async(req, res)=>{
     }
 
     return res.status(200).send({status:true, data:updateBook})
-    } catch (error) {
-        return res.status(500).send({
-            status: false,
-            message: error.message
-          })
-    }
 
+}catch(err){
+    return res.status(500).send({status:false, message:err.message})
+}
 }
 
 const deleteBooks= async (req,res)=>{
@@ -212,7 +213,7 @@ const deleteBooks= async (req,res)=>{
     
     if(!bookDelete) return res.status(404).send({status:false, message:"Book not found for this ID"})
     
-    res.status(200).send({status:true, message:"Success",data:bookDelete })
+    res.status(200).send({status:true, message:"Book deleted Successfully"})
 } catch(err){
     res.status(500).send({status:false, message:err.message})
 }

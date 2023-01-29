@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const reviewsSchema = new mongoose.Schema({
 
         bookId: {
@@ -24,12 +23,12 @@ const reviewsSchema = new mongoose.Schema({
              minLength : 1,
               maxLength : 5,
               required:true
-            },
+        },
         review: String,
         isDeleted: {
             type : Boolean,
              default: false
-            },
+        },
 },{timestamps:true}
 )
 

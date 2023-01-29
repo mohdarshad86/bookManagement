@@ -15,7 +15,7 @@ const authentication = function (req, res, next) {
                 next()
             } else {
                 return res.status(401).send({ status: false, message: err.message })
-            //   return res.status(401).send({ status: false, message: "Token is invalid" })
+            
             }
         })
     } catch (err) {

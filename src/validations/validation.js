@@ -18,7 +18,7 @@ const validateEmail = function(a){
 }
 
 const validatePassword = function(a){
-    if(a.match(/^[a-zA-Z0-9!@#$%^&*]{8,15}$/)) return true
+    if(a.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)) return true
 }
 
 const validatePhone = function(a){
