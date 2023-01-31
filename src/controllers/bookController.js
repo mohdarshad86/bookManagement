@@ -6,6 +6,54 @@ const {isValidObjectId}=require('mongoose')
 const moment = require('moment')
 const mongoose=require('mongoose')
 moment.suppressDeprecationWarnings = true;
+const aws = require('aws-sdk');
+
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRZNIRGT6N",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
+
+const uploadFile = async (file)=>{
+
+    return new Promise (function(resolve,reject){
+
+      const s3 = new aws.S3({apiVersion:"2006-03-01"});
+
+      const uploadParams = {
+        ACL : "public-read",
+        Bucket: "classroom-training-bucket",
+        Key : "/abc"+ file.originalname,
+        Body : file.buffer
+      }
+
+      s3.upload(uploadParams, (err,data)=>{
+        if(err){
+            return reject(err);
+        }
+        console.log(data);
+        return resolve(data.Location)
+      })
+    })
+
+}
+
+const awsUrl = async (req,res)=>{
+    try{
+            //aws
+    let cover = req.files;
+    console.log(cover);
+    if(Object.keys(cover).length==0) return res.status(400).send({status:false,message:"please provide cover image"});
+    let image = await uploadFile(cover[0]);
+
+    res.status(201).send({status:true,message:"Success",URL:image})
+    //aws
+
+    }catch(err){
+        res.status(500).send({status:false,message:err.message})
+    }
+}
 
 
 const createBooks= async (req,res)=>{
@@ -219,4 +267,4 @@ const deleteBooks= async (req,res)=>{
 }
 }
 
-module.exports={createBooks, getBooks, getBooksById,updateBooks,deleteBooks}
+module.exports={awsUrl, createBooks, getBooks, getBooksById,updateBooks,deleteBooks}

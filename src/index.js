@@ -4,8 +4,11 @@ const port = process.env.PORT || 3000;
 const route = require("./routes/route");
 mongoose.set("strictQuery", true);
 const app = express();
+const multer = require('multer');
 
 app.use(express.json());
+
+app.use(multer().any());
 
 mongoose
   .connect(
