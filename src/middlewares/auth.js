@@ -4,7 +4,7 @@ const bookModel =require('../models/bookModel')
 
 const authentication = function (req, res, next) {
     try {
-        let token = req.headers.token
+        let token = req.headers['x-api-key']
 
         if (!token) return res.status(400).send({ status: false, message: "missing mandatory header" })
 
@@ -26,7 +26,7 @@ const authentication = function (req, res, next) {
 
 const authorisation = async function (req, res, next) {
     try {
-        const token = req.headers.token
+        const token = req.headers['x-api-key']
         const userIdInToken = jwt.decode(token).userId
 
         const booksId = req.params.bookId
@@ -37,7 +37,7 @@ const authorisation = async function (req, res, next) {
                 message: "Please enter Valid Object Id"
             })
         }
-        const userId = await bookModel.findById(booksId).select({ userId: 1,_id:0 })
+        const userId = await bookModel.findById(booksId).select({ userId: 1 })
         if (!userId) {
             return res.status(404).send({
                 status: false,

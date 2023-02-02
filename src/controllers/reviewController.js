@@ -85,7 +85,7 @@ const updateReviews = async function (req, res) {
 
         let reviews = await reviewModel.find({ bookId: bookId, isDeleted: false });
 
-        bookData.reviewData = reviews;
+        bookData.reviewsData = reviews;
 
         return res.status(200).send({ status: true, message: "Success", data: bookData });
 

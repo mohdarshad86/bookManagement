@@ -12,7 +12,7 @@ app.use(multer().any());
 
 mongoose
   .connect(
-    "mongodb+srv://Chetan_ProjectClustor:PNr1Fn8OcRu2cGmk@project1.h4p8xqh.mongodb.net/group13Database",
+    "mongodb+srv://mohdarshad86:Arshad86@cluster0.r4p7rwf.mongodb.net/group13Database",
     { useNewUrlParser: true }
   )
   .then(() => {

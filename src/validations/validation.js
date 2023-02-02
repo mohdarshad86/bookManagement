@@ -3,14 +3,15 @@ if(a.match (/^([a-z A-Z]){2,50}$/)) return true
 }
 
 const validateTitle = function(a){
-if(a.match (/^([a-z A-Z\d]){2,50}$/)) return true
+if(a.match (/^[A-Za-z0-9\s\-_,\.:;()''""]+$/)) return true
 }
 // const validateObjectId = function(a){
 //     if(a.match(/^[a-f\d]{24}$/i)) return true;
 // }
 
 const validateISBN= function(a){
-    if(a.match(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/i)) return true
+    // if(a.match(/^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/i)) return true
+    if(a.match(/^[0-9]+(-[0-9]+)+$/i)) return true
 }
 
 const validateEmail = function(a){
