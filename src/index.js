@@ -9,7 +9,7 @@ const app = express();
 const multer = require('multer');
 
 app.use(express.json());
-app.use('cors')
+app.use(cors())
 app.use(multer().any());
 
 mongoose
